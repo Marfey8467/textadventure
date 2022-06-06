@@ -1,5 +1,3 @@
-import time
-import sys
 
 
 class Entity:
@@ -25,11 +23,11 @@ class Room:
     def __init__(self, start_position):
         self.position = start_position
         self.decisions = {"warten": self.describe_room,
-                           "vorwärts": self.go_north,
-                           "zurück": self.go_south,
-                           "hilfe": self.show_help,
-                           "aufgeben": self.end_game
-                           }
+                          "vorwärts": self.go_north,
+                          "zurück": self.go_south,
+                          "hilfe": self.show_help,
+                          "aufgeben": self.end_game
+                          }
         self.ls_str_desc = [
             "Du siehst einen leeren Korridor, der durch eine Fackel an der Wand beleuchtet wird",
             "Du verlässt den Korridor nach Norden",
@@ -37,7 +35,8 @@ class Room:
             ""
         ]
 
-    def end_game(self):
+    @staticmethod
+    def end_game():
         input("Das Spiel ist beendet. Drücke eine beliebige Taste zum Beenden")
         exit()
 
@@ -59,10 +58,13 @@ class Room:
     def look_around(self):
         print(self.ls_str_desc[3])
 
-    def decision(self):
-        print("Was möchtest du tun?")
-        print_options()
-        actual_world.map[player.position].decisions[input()]()
+    @staticmethod
+    def decision():
+        str_input = input("Was möchtest du tun?\n")
+        if str_input in actual_world.map[player.position].decisions:
+            actual_world.map[player.position].decisions[str_input]()
+        else:
+            print("Du weißt nicht was du tun sollst und läufst verwirrt im Kreis. (tippe hilfe)")
 
 
 class World:
@@ -75,19 +77,27 @@ def print_options():
 
 
 def create_world(world: World):
+    print("Welt wird geladen...")
     world.map.append(Room(0))
     world.map.append(Room(1))
     world.map.append(Room(2))
 
-    #world.map[0].decisions = {}
+    world.map[2].decisions = {"warten": world.map[2].describe_room,
+                              "hilfe": world.map[2].show_help,
+                              "aufgeben": world.map[2].end_game
+                              }
 
-    world.map[0].ls_str_desc[0] = """Der Korridor wird gesäumt von Skeletten, die an die Wand gekettet sind. 
-    Sie hängen an Armen und Beinen gefesselt von den Wänden."""
-    world.map[1].ls_str_desc[0] = """Der Korridor endet hier. Vor dir siehst du die Rückseite einer Geheimtür.
-    Sie ist nur leicht angelehnt"""
-    world.map[2].ls_str_desc[0] = """Du stehst in einem Thronraum. Ein Kampf zwischen einem großen schwarzen Ritter mit
-    einer blutroten Krone und einer Gruppe Abenteurern, die dich verblüfft ansehen, nachdem du hinter dem Thron 
-    hervor trittst."""
+    world.map[0].ls_str_desc[0] = (
+        "Der Korridor wird gesäumt von Skeletten, die an die Wand gekettet sind. "
+        "Sie hängen an Armen und Beinen gefesselt von den Wänden.")
+    world.map[1].ls_str_desc[0] = (
+        "Der Korridor endet hier. Vor dir siehst du die Rückseite einer Geheimtür. "
+        "Sie ist nur leicht angelehnt. ")
+    world.map[2].ls_str_desc[0] = (
+        "Du stehst in einem Thronraum. Ein Kampf zwischen einem großen schwarzen Ritter mit "
+        "einer blutroten Krone und einer Gruppe Abenteurern, die dich verblüfft ansehen, nachdem du hinter dem Thron " 
+        "hervor trittst. ")
+    print("Welt fertig geladen")
 
 
 if __name__ == "__main__":
